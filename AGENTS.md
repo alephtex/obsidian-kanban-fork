@@ -1,8 +1,27 @@
 AGENTS.md
 
-Project: Obsidian Kanban Plugin
+Project: Obsidian Kanban Plugin - Fork with Escape Key Save Behavior
 Framework: TypeScript, React (Preact), Obsidian API
 Build Tool: esbuild
+
+## Fork Modifications
+
+### Escape Key Behavior Changes
+This fork modifies the Escape key behavior to **save edits instead of canceling them**:
+
+**Modified Files:**
+- `src/components/Item/ItemContent.tsx` - Escape key saves card edits
+- `src/components/Item/ItemForm.tsx` - Escape key and click-outside save new cards
+- `src/components/Lane/LaneTitle.tsx` - Escape key saves lane title edits
+- `src/components/Lane/LaneForm.tsx` - Escape key creates new lane
+
+**Behavior Changes:**
+- **Escape key**: Now saves changes instead of canceling them
+- **Click outside**: Now saves changes (for item form) instead of discarding them
+- **Enter key**: Continues to save changes (when not allowing new lines)
+
+**Documentation:**
+- `ESCAPE_KEY_CHANGES.md` - Detailed documentation of all changes
 
 ## 1. Build, Lint, and Test Commands
 
@@ -60,6 +79,34 @@ All commands are run via `yarn` or `npm` (preferring `yarn` as per lockfile).
 ### Error Handling
 - **Async/Await**: Enforce `await-thenable` lint rule.
 - **General**: Use try/catch for Obsidian API calls or file operations.
+
+### Negative Space Programming (Defensive Programming)
+**CRITICAL**: Always use Negative Space Programming patterns. Do not write "Happy Path" code without first asserting the state of reality.
+
+**The Pattern:**
+1. **Define Negative Space** (Invalid States) at the start of every function
+2. **Assert Early, Crash Loudly** - Check all inputs and invariants
+3. **Eliminate Ambiguity** - Never assume variables "should" be there
+
+**Examples:**
+```typescript
+// Bad (Vibe Coding - NOT ACCEPTABLE):
+function processPayment(amount) {
+  return api.charge(amount);
+}
+
+// Good (Negative Space - REQUIRED):
+function processPayment(amount) {
+  // 1. Define Negative Space (Invalid States)
+  if (typeof amount !== 'number') throw new Error("Payment amount must be a number");
+  if (amount <= 0) throw new Error("Payment amount must be positive");
+
+  // 2. Run Logic (Guaranteed Valid State)
+  return api.charge(amount);
+}
+```
+
+**Goal:** Your code should fail INSTANTLY at the source of the error, rather than propagating `undefined`, `null`, or `NaN` downstream.
 
 ### File Structure
 - Source code resides in `src/`.
